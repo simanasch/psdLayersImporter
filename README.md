@@ -1,0 +1,2 @@
+# psdLayersImporter
+blenderにpsdファイルのlayer構造をそのまま平面として取り込むimporterプラグイン
