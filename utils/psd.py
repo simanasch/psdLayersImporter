@@ -9,7 +9,7 @@ from PIL import Image
 # PIL.imageを返す
 # pixel/mのレート
 pixel_rate = 0.0
-centerPosition= (0.0,0.0)
+zIndex=0.00
 
 def get_file_name_from_path(filepath):
   return os.path.splitext( os.path.basename(filepath))[0]
@@ -31,6 +31,8 @@ def add_images_from_psd(path, encoding='macroman'):
       layerPlane = add_plane_of_layer_size(layer, psd)
       if layer.parent.name == 'Root':
         layerPlane.parent = rootPlane
+        global zIndex
+        zIndex += 0.001
       else:
         layerPlane.parent = parent
     # groupならemptyObjectを追加、parentにする
@@ -45,14 +47,14 @@ def add_images_from_psd(path, encoding='macroman'):
 
 def add_group_layer(psd):
   global pixel_rate
+  global zIndex
+  zIndex += 0.001
   if pixel_rate == 0.0:
     # 1pxあたり何メートルになるか出す
     pixel_rate = 1/max(psd.size)
-    # global centerPosition
-    centerPosition = (psd.size[0]/2,psd.size[1]/2)
   w, h = psd.size
   # max_size = max(psd.size)
-  bpy.ops.object.empty_add(type='IMAGE', align='WORLD', location=(0, 0, 0), scale=(w * pixel_rate, h * pixel_rate,0))
+  bpy.ops.object.empty_add(type='IMAGE', align='WORLD', location=(0, 0, zIndex), scale=(w * pixel_rate, h * pixel_rate,0))
   obj = bpy.context.object
   obj.name = psd.name
   return obj
@@ -71,12 +73,16 @@ def add_plane_of_layer_size(psdLayer, root=None):
   # materialを設定
   obj.active_material = add_material(psdLayer)
   # 可視性を設定する
-  obj.hide_viewport = psdLayer.is_visible()
-  obj.hide_render = psdLayer.is_visible()
+  layerVisibility = get_layer_visibility(psdLayer)
+  obj.hide_viewport = layerVisibility
+  obj.hide_render = layerVisibility
   if root is not None:
     rw,rh = root.size
-    obj.location = (((ow+w/2)-rw/2) * pixel_rate*2, ((oh+h/2)-rh/2) * pixel_rate*2, 0)
+    obj.location = (((ow+w/2)-rw/2) * pixel_rate*2, ((oh+h/2)-rh/2) * pixel_rate*2, zIndex)
   return obj
+
+def get_layer_visibility(psdLayer):
+  return not(psdLayer.name.startswith('!') | psdLayer.is_visible())
 
 def add_material(psdLayer):
   # マテリアルを新規追加
