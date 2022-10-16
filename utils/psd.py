@@ -88,6 +88,7 @@ def add_material(psdLayer):
   # マテリアルを新規追加
   add_mat = bpy.data.materials.new(psdLayer.name)
   w, h = psdLayer.size
+  add_mat.use_fake_user = True
   # 透過を設定
   add_mat.blend_method = 'CLIP'
   add_mat.shadow_method = 'CLIP'
