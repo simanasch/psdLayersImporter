@@ -19,7 +19,6 @@ def get_image_as_np_array(image):
 
 
 def get_layer_absolute_path(layer):
-  # 
   if (layer.name == "Root" )| (layer.name == None) | (layer.parent == None):
     return 'Root'
   elif layer.parent.name == "Root":

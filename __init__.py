@@ -59,29 +59,13 @@ auto_load.init()
 def register():
   auto_load.register()
 
-  # from .classes.psdSettings import psd_OT_Settings
   from .operator.importer import menu_func_import
-  # from .handler.handler import onFrameChangePost
-  # bpy.types.Object.psd_settings = bpy.props.PointerProperty(type=psd_OT_Settings)
   bpy.types.VIEW3D_MT_image_add.append(menu_func_import)
-  # # 既にインスタンス追加していた場合、インスタンス削除
-  # try:
-  #   index = bpy.app.handlers.frame_change_post.index(onFrameChangePost)
-  #   bpy.app.handlers.frame_change_post.remove(index)
-  #   print("layeredPsdMaterial remove handler")
-  # except ValueError:
-  #   print("layeredPsdMaterial handler not exists")
-  #   pass
-  # # 
-  # bpy.app.handlers.frame_change_post.append(onFrameChangePost)
 
 #
 # アドオン無効化時の処理
 # 
 def unregister():
   auto_load.unregister()
-  # from .handler.handler import onFrameChangePost
-  # from .operator.operator import menu_func_import
-  # from .handler.handler import onFrameChangePost
-  # bpy.app.handlers.frame_change_post.remove(onFrameChangePost)
-  # bpy.types.VIEW3D_MT_image_add.remove(menu_func_import)
+  from .operator.importer import menu_func_import
+  bpy.types.VIEW3D_MT_image_add.append(menu_func_import)
