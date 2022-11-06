@@ -71,7 +71,6 @@ def add_group_layer(psd):
     # 1pxあたり何メートルになるか出す
     pixel_rate = 1/max(psd.size)
   w, h = psd.size
-  # max_size = max(psd.size)
   bpy.ops.object.empty_add(type='IMAGE', align='WORLD', location=(0, 0, zIndex), scale=(w * pixel_rate, h * pixel_rate,0))
   obj = bpy.context.object
   obj.name = psd.name
@@ -85,7 +84,6 @@ def add_plane_of_layer_size(psdLayer, root=None, cacheImage=False):
   obj.name = psdLayer.name
   w, h = psdLayer.size
   ow,oh = psdLayer.offset
-  # max_size = max(psdLayer.size)
   # importするpsdファイルに合わせ、オブジェクトをリサイズする
   bpy.ops.transform.resize(value=((w*pixel_rate, h*pixel_rate,0)))
   # materialを設定
@@ -97,6 +95,8 @@ def add_plane_of_layer_size(psdLayer, root=None, cacheImage=False):
   if root is not None:
     rw,rh = root.size
     obj.location = (((ow+w/2)-rw/2) * pixel_rate*2, ((oh+h/2)-rh/2) * pixel_rate*2, zIndex)
+    if cacheImage:
+      obj.location[1] = obj.location[1] * -1
   return obj
 
 def get_layer_visibility(psdLayer):
@@ -114,6 +114,8 @@ def add_material(psdLayer,cacheImage=False):
 
   # ノードを追加
   shader_node = add_mat.node_tree.nodes['Principled BSDF']
+  # 裏表で明度が変わるのを避けるため、メタリックの値を1にする
+  # shader_node.inputs['Metallic'].default_value=1.0
   imageTextureNode = add_mat.node_tree.nodes.new("ShaderNodeTexImage")
 
   # ノード同士のリンクを設定
@@ -131,9 +133,7 @@ def add_material(psdLayer,cacheImage=False):
     bpy_image.filepath = cachePath
     bpy_image.source = "FILE"
     bpy_image.reload()
-    # bpy.ops.image.open(filepath=cachePath, files=[{"name":layerName}])
     imageTextureNode.image = bpy_image
-    # bpy.data.images[layerName].use_fake_user= True
   else:
     bpy_image = bpy.data.images.new(psdLayer.name, w, h, alpha=True)
     bpy_image.pack()

@@ -24,15 +24,13 @@ class PSDLAYERSIMPORTER_OT_Importer(bpy.types.Operator, ImportHelper):
     name='レイヤー名のエンコード'
   )
 
-  # cacheImage:BoolProperty(
-  #   name="キャッシュ生成",
-  #   description="チェックした場合、各画像をファイルに書き出す",
-  #   default=False
-  # )
+  cacheImage:BoolProperty(
+    name="キャッシュ生成",
+    description="チェックした場合、各画像をファイルに書き出す",
+    default=False
+  )
 
   def execute(self, context):
-    print("PSDLAYERSIMPORTER_OT_Importer")
-    print(self.filepath)
     path = os.path.abspath( bpy.path.abspath(self.filepath))
-    psd.add_images_from_psd(path, self.psdLayerNameEncoding)
+    psd.add_images_from_psd(path, self.psdLayerNameEncoding, self.cacheImage)
     return {'FINISHED'}
